@@ -1,0 +1,27 @@
+# Secrets
+node_modules/
+.env
+
+# Virtual environments
+env/
+venv/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Compiled binaries
+a.out
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
