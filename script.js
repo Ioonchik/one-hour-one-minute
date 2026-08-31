@@ -14,6 +14,10 @@ randomBtn.addEventListener('click', function() {
     timer = setInterval(function() {
         if (timeLeft <= 0) {
             clearInterval(timer);
+            const audio = new Audio("sounds/timeup.mp3");
+            audio.play();
+            timerDisplay.textContent = "Time's up! 🎉";
+            return;
         }
 
         const minutes = Math.floor(timeLeft / 60);
