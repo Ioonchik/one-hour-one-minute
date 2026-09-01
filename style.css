@@ -1,3 +1,11 @@
+:root {
+  --bg-color: #eafff3;
+  --accent-color: #2ecc71;
+  --accent-dark: #27ae60;
+  --text-color: #1b2b22;
+  --card-bg: #ffffff;
+}
+
 body {
     display: flex;
     flex-direction: column;
@@ -6,10 +14,56 @@ body {
     height: 100vh;
     text-align: center;
     font-family: sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color)
+}
+
+h1 {
+    font-size: 32px;
+    margin-bottom: 10%;
+}
+
+#randomBtn {
+    background-color: var(--accent-color);
+    border-radius: 5px;
+    padding: 15px 30px;
+    border: none;
+    cursor: pointer;
+    color: var(--text-color);
+    font-size: 18px;
+}
+#randomBtn:hover {
+    background-color: var(--accent-dark);
+    
 }
 
 #timerDisplay {
     font-size: 80px;
     font-weight: bold;
     margin: 20px 0;
+    font-size: 60px;
+    font-weight: bold;
+    color: var(--accent-dark);
+}
+
+#researchScreen, #explainScreen, #resultScreen {
+    display: none;
+    background-color: var(--card-bg);
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 24px;
+    }
+
+    #timerDisplay {
+        font-size: 44px;
+    }
+
+    #researchScreen, #explainScreen, #resultScreen {
+        padding: 20px;
+    }
 }
