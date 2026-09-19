@@ -115,7 +115,7 @@ randomBtn.addEventListener('click', function() {
     let timeLeft = 10;
     let initialTimeLeft = timeLeft;
     clearInterval(timer);
-    timer = setInterval(function() {
+    timer = setInterval(async function() {
         if (timeLeft <= 0) {
             clearInterval(timer);
 
@@ -125,7 +125,18 @@ randomBtn.addEventListener('click', function() {
             const audio = new Audio("sounds/timeup.mp3");
             audio.play();
             timerDisplay.textContent = "Time's up! 🎉";
-            
+
+            const stream = await getMicrophoneAccess();
+
+            const mediaRecorder = new MediaRecorder(stream);
+            const audioChunks = [];
+
+            mediaRecorder.ondataavailable = function(event) {
+                audioChunks.push(event.data);
+            };
+
+            mediaRecorder.start()
+
             let explainTimeLeft = 10;
             let initialExplainTimeLeft = explainTimeLeft;
             explainTimer = setInterval(async function() {
@@ -137,6 +148,13 @@ randomBtn.addEventListener('click', function() {
 
                     resultDisplay.innerHTML = "You learned: " + randomTopic + "<br>" + "Research time: " + initialTimeLeft + "s"
                     + "<br>" + "Explain time: " + initialExplainTimeLeft + "s";
+
+                    mediaRecorder.stop();
+
+                    mediaRecorder.onstop = function() {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        console.log(audioBlob);
+                    }
 
                     await addDoc(collection(db, "challenges"), {
                         topic: randomTopic,
@@ -238,3 +256,13 @@ backHomeBtn.addEventListener('click', function() {
     historyScreen.style.display = "none";
     homeScreen.style.display = "block";
 })
+
+
+async function getMicrophoneAccess() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+        return stream;
+    } catch (error) {
+        console.log("Microphone access denied:", error);
+    }
+}
