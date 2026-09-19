@@ -1,4 +1,79 @@
-const topics = ["Topic 1", "Topic 2", "Topic 3"];
+const topics = [
+    "Why is the sky blue?",
+    "How do black holes work?",
+    "Why do we dream?",
+    "How does anesthesia work?",
+    "Why do we get hiccups?",
+    "How does a microwave heat food?",
+    "Why do magnets attract?",
+    "How do vaccines work?",
+    "Why does time feel faster as we get older?",
+    "How do airplanes fly?",
+    "Why do we have fingerprints?",
+    "How does the immune system recognize viruses?",
+    "Why does ice float?",
+    "How do batteries work?",
+    "What causes earthquakes?",
+    "Why did the Roman Empire fall?",
+    "How did the printing press change the world?",
+    "Why did the Cold War happen?",
+    "How did the Internet begin?",
+    "Why did humans start farming?",
+    "How did money originate?",
+    "Why do countries have borders?",
+    "How did democracy develop?",
+    "Why did the Titanic sink?",
+    "How did the Silk Road work?",
+    "How does GPS know where you are?",
+    "How does Wi-Fi work?",
+    "How does facial recognition work?",
+    "How does Bitcoin work?",
+    "How does a search engine work?",
+    "How do recommendation algorithms work?",
+    "How does cloud computing work?",
+    "How do video games render graphics?",
+    "How does a QR code work?",
+    "How does encryption work?",
+    "Why do we sleep?",
+    "How does the brain store memories?",
+    "Why do we age?",
+    "Why do muscles grow?",
+    "How does the heart pump blood?",
+    "Why do we blush?",
+    "Why do we sneeze?",
+    "How does hearing work?",
+    "Why do we feel pain?",
+    "How does caffeine affect the brain?",
+    "Why does inflation happen?",
+    "How does the stock market work?",
+    "Why do companies go bankrupt?",
+    "How do banks make money?",
+    "Why does the price of gold change?",
+    "What causes economic recessions?",
+    "Why are some countries rich and others poor?",
+    "How does compound interest work?",
+    "Why does supply and demand affect prices?",
+    "How does a credit card company make money?",
+    "Why are LEGO bricks so strong?",
+    "How does a piano make sound?",
+    "Why do onions make us cry?",
+    "Why are cats afraid of cucumbers?",
+    "How does perfume work?",
+    "Why do popcorn kernels explode?",
+    "How does a vending machine know what you bought?",
+    "Why do we have different accents?",
+    "How does magic actually fool the brain?",
+    "Why are diamonds so expensive?",
+    "How does a lie detector work?",
+    "Why do people believe conspiracy theories?",
+    "How does a roller coaster stay on the track?",
+    "Why are bananas slightly radioactive?",
+    "How does a barcode work?"
+];
+
+import { auth } from "./firebase-config.js";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
 const randomBtn = document.getElementById('randomBtn');
 const topicDisplay = document.getElementById('topicDisplay');
 const timerDisplay = document.getElementById('timerDisplay');
@@ -8,6 +83,13 @@ const homeScreen = document.getElementById('homeScreen');
 const researchScreen = document.getElementById('researchScreen');
 const explainScreen = document.getElementById('explainScreen');
 const resultScreen = document.getElementById('resultScreen');
+
+const emailInput = document.getElementById('emailInput');
+const passwordInput = document.getElementById('passwordInput');
+const signUpBtn = document.getElementById('signUpBtn');
+const signInBtn = document.getElementById('signInBtn');
+const authError = document.getElementById('authError');
+const authScreen = document.getElementById('authScreen');
 
 
 let timer;
@@ -19,7 +101,7 @@ randomBtn.addEventListener('click', function() {
     homeScreen.style.display = "none";
     researchScreen.style.display = "block";
 
-    let timeLeft = 3;
+    let timeLeft = 900;
     let initialTimeLeft = timeLeft;
     clearInterval(timer);
     timer = setInterval(function() {
@@ -33,7 +115,7 @@ randomBtn.addEventListener('click', function() {
             audio.play();
             timerDisplay.textContent = "Time's up! 🎉";
             
-            let explainTimeLeft = 2;
+            let explainTimeLeft = 60;
             let initialExplainTimeLeft = explainTimeLeft;
             explainTimer = setInterval(function() {
                 if (explainTimeLeft <= 0) {
@@ -72,3 +154,34 @@ randomBtn.addEventListener('click', function() {
     }, 1000);
 });
 
+signUpBtn.addEventListener('click', async function () {
+    const email = emailInput.value;
+    const password = passwordInput.value;
+
+    try {
+        await createUserWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+        authError.textContent = error.message;
+    }
+})
+
+signInBtn.addEventListener('click', async function () {
+    const email = emailInput.value;
+    const password = passwordInput.value;
+
+    try {
+        await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+        authError.textContent = error.message;
+    }
+})
+
+onAuthStateChanged(auth, function(user) {
+    if (user) {
+        authScreen.style.display = "none";
+        homeScreen.style.display = "block";
+    } else {
+        authScreen.style.display = "block";
+        homeScreen.style.display = "none";
+    }
+})

@@ -46,7 +46,7 @@ h1 {
     color: var(--accent-dark);
 }
 
-#researchScreen, #explainScreen, #resultScreen {
+#researchScreen, #explainScreen, #resultScreen, #homeScreen {
     display: none;
     background-color: var(--card-bg);
     padding: 40px;

@@ -1,6 +1,7 @@
 # Secrets
 node_modules/
 .env
+firebase-config.js
 
 # Virtual environments
 env/
