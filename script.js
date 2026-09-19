@@ -151,17 +151,21 @@ randomBtn.addEventListener('click', function() {
 
                     mediaRecorder.stop();
 
-                    mediaRecorder.onstop = function() {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                        console.log(audioBlob);
-                    }
 
-                    await addDoc(collection(db, "challenges"), {
-                        topic: randomTopic,
-                        researchTime: initialTimeLeft,
-                        explainTime: initialExplainTimeLeft,
-                        userId: auth.currentUser.uid,
-                    })
+                    mediaRecorder.onstop = async function() {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const audioUrl = await uploadToCloudinary(audioBlob);
+
+                        await addDoc(collection(db, "challenges"), {
+                            topic: randomTopic,
+                            researchTime: initialTimeLeft,
+                            explainTime: initialExplainTimeLeft,
+                            userId: auth.currentUser.uid,
+                            audioUrl: audioUrl,
+                        });
+                    };
+
+                    
                     return;
                 }
 
@@ -265,4 +269,18 @@ async function getMicrophoneAccess() {
     } catch (error) {
         console.log("Microphone access denied:", error);
     }
+}
+
+async function uploadToCloudinary(blob) {
+    const formData = new FormData();
+    formData.append('file', blob);
+    formData.append('upload_preset', 'yzqrk0q5')
+
+    const response = await fetch('https://api.cloudinary.com/v1_1/dqdo3ghwo/auto/upload', {
+        method: 'POST',
+        body: formData
+    });
+
+    const data = await response.json();
+    return data.secure_url;
 }
