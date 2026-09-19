@@ -72,8 +72,9 @@ const topics = [
 ];
 
 import { auth } from "./firebase-config.js";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+ 
 const randomBtn = document.getElementById('randomBtn');
 const topicDisplay = document.getElementById('topicDisplay');
 const timerDisplay = document.getElementById('timerDisplay');
@@ -91,6 +92,16 @@ const signInBtn = document.getElementById('signInBtn');
 const authError = document.getElementById('authError');
 const authScreen = document.getElementById('authScreen');
 
+const userEmailText = document.getElementById('userEmail')
+const logoutBtn = document.getElementById('logoutBtn')
+
+const historyScreen = document.getElementById('historyScreen');
+const historyCount = document.getElementById('historyCount');
+const historyList = document.getElementById('historyList');
+const viewHistoryBtn = document.getElementById('viewHistoryBtn');
+const backHomeBtn = document.getElementById('backHomeBtn');
+
+const db = getFirestore()
 
 let timer;
 let explainTimer;
@@ -101,7 +112,7 @@ randomBtn.addEventListener('click', function() {
     homeScreen.style.display = "none";
     researchScreen.style.display = "block";
 
-    let timeLeft = 900;
+    let timeLeft = 10;
     let initialTimeLeft = timeLeft;
     clearInterval(timer);
     timer = setInterval(function() {
@@ -115,9 +126,9 @@ randomBtn.addEventListener('click', function() {
             audio.play();
             timerDisplay.textContent = "Time's up! 🎉";
             
-            let explainTimeLeft = 60;
+            let explainTimeLeft = 10;
             let initialExplainTimeLeft = explainTimeLeft;
-            explainTimer = setInterval(function() {
+            explainTimer = setInterval(async function() {
                 if (explainTimeLeft <= 0) {
                     clearInterval(explainTimer);
                     
@@ -126,6 +137,13 @@ randomBtn.addEventListener('click', function() {
 
                     resultDisplay.innerHTML = "You learned: " + randomTopic + "<br>" + "Research time: " + initialTimeLeft + "s"
                     + "<br>" + "Explain time: " + initialExplainTimeLeft + "s";
+
+                    await addDoc(collection(db, "challenges"), {
+                        topic: randomTopic,
+                        researchTime: initialTimeLeft,
+                        explainTime: initialExplainTimeLeft,
+                        userId: auth.currentUser.uid,
+                    })
                     return;
                 }
 
@@ -180,8 +198,43 @@ onAuthStateChanged(auth, function(user) {
     if (user) {
         authScreen.style.display = "none";
         homeScreen.style.display = "block";
+
+        userEmailText.textContent = user.email;
     } else {
         authScreen.style.display = "block";
         homeScreen.style.display = "none";
     }
+})
+
+logoutBtn.addEventListener('click', async function() {
+    try {
+        await signOut(auth);
+    } catch {
+        //pass
+    }
+})
+
+viewHistoryBtn.addEventListener('click', async function() {
+    homeScreen.style.display = "none";
+    historyScreen.style.display = "block";
+
+    const q = query(collection(db, "challenges"), where("userId", "==", auth.currentUser.uid));
+    const querySnapshot = await getDocs(q);
+
+    historyList.innerHTML = "";
+    let count = 0;
+
+    querySnapshot.forEach(function(doc) {
+        const data = doc.data();
+        count += 1;
+
+        historyList.innerHTML += "<p>" + data.topic + " — Research: " + data.researchTime + "s, Explain: " + data.explainTime + "s</p>";
+    });
+
+    historyCount.textContent = count + " topic learned";
+})
+
+backHomeBtn.addEventListener('click', function() {
+    historyScreen.style.display = "none";
+    homeScreen.style.display = "block";
 })
