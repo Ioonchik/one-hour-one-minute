@@ -156,12 +156,18 @@ randomBtn.addEventListener('click', function() {
                         const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                         const audioUrl = await uploadToCloudinary(audioBlob);
 
+                        const analysis = await analyzeChallenge(audioUrl, randomTopic);
+
                         await addDoc(collection(db, "challenges"), {
                             topic: randomTopic,
                             researchTime: initialTimeLeft,
                             explainTime: initialExplainTimeLeft,
                             userId: auth.currentUser.uid,
                             audioUrl: audioUrl,
+                            score: analysis.score,
+                            fillerWordsCount: analysis.fillerWordsCount,
+                            feedback: analysis.feedback,
+                            coversTopicWell: analysis.coversTopicWell
                         });
                     };
 
@@ -283,4 +289,22 @@ async function uploadToCloudinary(blob) {
 
     const data = await response.json();
     return data.secure_url;
+}
+
+async function analyzeChallenge(audioUrl, topic) {
+    const transcribeResponse = await fetch('https://soile-backend-production.up.railway.app/transcribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ audioUrl: audioUrl })
+    });
+    const transcribeData = await transcribeResponse.json();
+    
+    const analyzeResponse = await fetch('https://soile-backend-production.up.railway.app/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: transcribeData.text, topic: topic })
+    })
+    const analysisData = await analyzeResponse.json();
+
+    return analysisData;
 }
