@@ -101,6 +101,11 @@ const historyList = document.getElementById('historyList');
 const viewHistoryBtn = document.getElementById('viewHistoryBtn');
 const backHomeBtn = document.getElementById('backHomeBtn');
 
+const sumTime = document.getElementById('sumTime');
+const avgScore = document.getElementById('avgScore');
+const levelText = document.getElementById('levelText');
+const progressBarFill = document.getElementById('progressBarFill');
+
 const db = getFirestore()
 
 let timer;
@@ -251,15 +256,32 @@ viewHistoryBtn.addEventListener('click', async function() {
 
     historyList.innerHTML = "";
     let count = 0;
+    let scoredCount = 0;
+    let timeSum = 0;
+    let scoreSum = 0;
+    let totalXp = 0;
 
     querySnapshot.forEach(function(doc) {
         const data = doc.data();
         count += 1;
+        timeSum += data.researchTime + data.explainTime;
+
+        if (data.score !== undefined) {
+            scoredCount += 1;
+            totalXp += data.score * 10;
+            scoreSum += data.score;
+        }
 
         historyList.innerHTML += "<p>" + data.topic + " — Research: " + data.researchTime + "s, Explain: " + data.explainTime + "s</p>";
     });
 
+    const level = Math.floor(totalXp / 100) + 1
+    const xpInCurrentLevel = totalXp % 100;
+
     historyCount.textContent = count + " topic learned";
+    sumTime.textContent = timeSum;
+    avgScore.textContent = count > 0 ? (scoreSum / scoredCount).toFixed(1) : "No data yet";
+    levelText.textContent = "XP: " + xpInCurrentLevel + " / 100";
 })
 
 backHomeBtn.addEventListener('click', function() {
