@@ -105,6 +105,7 @@ const sumTime = document.getElementById('sumTime');
 const avgScore = document.getElementById('avgScore');
 const levelText = document.getElementById('levelText');
 const progressBarFill = document.getElementById('progressBarFill');
+const streakText = document.getElementById('streakText');
 
 const db = getFirestore()
 
@@ -262,20 +263,37 @@ viewHistoryBtn.addEventListener('click', async function() {
     let scoreSum = 0;
     let totalXp = 0;
 
+    const uniqueDates = new Set();
+
     querySnapshot.forEach(function(doc) {
         const data = doc.data();
         count += 1;
         timeSum += data.researchTime + data.explainTime;
 
+        if (data.createdAt !== undefined) {
+            const date = data.createdAt.toDate();
+            const dateString = date.toISOString().split('T')[0];
+            uniqueDates.add(dateString);
+        }
+        
         if (data.score !== undefined) {
             scoredCount += 1;
             totalXp += data.score * 10;
             scoreSum += data.score;
         }
-
+        
         historyList.innerHTML += "<p>" + data.topic + " — Research: " + data.researchTime + "s, Explain: " + data.explainTime + "s</p>";
     });
 
+    let streak = 0;
+    let checkDate = new Date();
+
+    while (uniqueDates.has(checkDate.toISOString().split('T')[0])) {
+        streak += 1;
+        checkDate.setDate(checkDate.getDate() - 1);
+    }
+    
+    console.log(uniqueDates);
     const level = Math.floor(totalXp / 100) + 1
     const xpInCurrentLevel = totalXp % 100;
     const progressPercent = (xpInCurrentLevel / 100) * 100;
@@ -285,6 +303,7 @@ viewHistoryBtn.addEventListener('click', async function() {
     sumTime.textContent = timeSum;
     avgScore.textContent = count > 0 ? (scoreSum / scoredCount).toFixed(1) : "No data yet";
     levelText.textContent = "XP: " + xpInCurrentLevel + " / 100";
+    streakText.textContent = "🔥 " + streak + " day streak";
 })
 
 backHomeBtn.addEventListener('click', function() {
