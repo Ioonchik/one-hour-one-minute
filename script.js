@@ -73,7 +73,7 @@ const topics = [
 
 import { auth } from "./firebase-config.js";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
  
 const randomBtn = document.getElementById('randomBtn');
 const topicDisplay = document.getElementById('topicDisplay');
@@ -172,7 +172,8 @@ randomBtn.addEventListener('click', function() {
                             score: analysis.score,
                             fillerWordsCount: analysis.fillerWordsCount,
                             feedback: analysis.feedback,
-                            coversTopicWell: analysis.coversTopicWell
+                            coversTopicWell: analysis.coversTopicWell,
+                            createdAt: serverTimestamp(),
                         });
                     };
 
@@ -277,6 +278,8 @@ viewHistoryBtn.addEventListener('click', async function() {
 
     const level = Math.floor(totalXp / 100) + 1
     const xpInCurrentLevel = totalXp % 100;
+    const progressPercent = (xpInCurrentLevel / 100) * 100;
+    progressBarFill.style.width = progressPercent + "%";
 
     historyCount.textContent = count + " topic learned";
     sumTime.textContent = timeSum;
