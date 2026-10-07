@@ -69,6 +69,10 @@ h1 {
     transition: width 0.3s ease;
 }
 
+.boss_mode {
+    border: 3px solid gold
+}
+
 @media (max-width: 480px) {
     h1 {
         font-size: 24px;

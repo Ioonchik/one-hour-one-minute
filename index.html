@@ -2,7 +2,7 @@
 <html>
 <head>
     <link rel="stylesheet" href="style.css">
-    <script type="module" src="script.js"></script>
+    <script type="module" src="js/main.js"></script>
     <script type="module" src="firebase-config.js"></script>
     <title>One hour, one minute</title>
 </head>
@@ -29,7 +29,7 @@
     <p id="timerDisplay"></p>
     <div id="explainScreen">
         <p id="explanationLabel">Explain what you learned</p>
-        
+        <p id="savingIndicator" style="display: none;">Saving your results, please don't close this tab...</p>
     </div>
     <div id="resultScreen">
         <p id="resultDisplay"></p>
@@ -39,7 +39,7 @@
         <h2>My History</h2>
         <p id="historyCount"></p>
         <p id="sumTime"></p>
-        <p id="avgScore"></p>
+        <p id="avgScoreText"></p>
         <p id="levelText"></p>
         <p id="streakText"></p>
         <div id="progressBarBackground">
