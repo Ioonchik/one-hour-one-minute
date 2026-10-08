@@ -24,3 +24,24 @@ signInBtn.addEventListener('click', async function () {
         authError.textContent = error.message;
     }
 })
+
+
+onAuthStateChanged(auth, function(user) {
+    if (user) {
+        authScreen.style.display = "none";
+        homeScreen.style.display = "block";
+
+        userEmailText.textContent = user.email;
+    } else {
+        authScreen.style.display = "block";
+        homeScreen.style.display = "none";
+    }
+})
+
+logoutBtn.addEventListener('click', async function() {
+    try {
+        await signOut(auth);
+    } catch {
+        //pass
+    }
+})
